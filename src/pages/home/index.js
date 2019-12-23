@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import api from "../../service/api";
 import Modal from "./modal";
+import Cards from "../cards/index";
+
 import { makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -9,6 +11,9 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
+import TrashIcon from "@material-ui/icons/RestoreFromTrash";
+import EditIcon from "@material-ui/icons/Create";
+
 import { Container, Access } from "./style";
 
 const useStyles = makeStyles({
@@ -25,6 +30,7 @@ export default function Home({ history }) {
   const [products, setProducts] = useState([]);
   const [message, setMessage] = useState("");
   const [userName, setUserName] = useState([]);
+  const [delet, setDelet] = useState("");
 
   const classes = useStyles();
 
@@ -47,9 +53,27 @@ export default function Home({ history }) {
     localStorage.clear();
     history.push("/");
   }
+  async function handleDelete(model) {
+    let data = { model };
+    console.log(data);
+    let config = {
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("token")
+      },
+      "Content-Type": "text/json"
+    };
+    const response = await api.delete(
+      "/Product/ProductDelete?model=" + model,
+      config
+    );
+    console.log(response);
+    setDelet(response.data.mensagem);
+    handleProducts();
+  }
 
   return (
     <>
+      <Cards />
       <Container>
         <Access>
           <Button
@@ -63,26 +87,16 @@ export default function Home({ history }) {
           >
             Buscar Produtos
           </Button>
-          <p>{userName}</p>
+
           <Modal />
-          <Button
-            onClick={() => handleLogOut()}
-            variant="contained"
-            style={{
-              marginBottom: "20px",
-              backgroundColor: "red",
-              color: "#ffff"
-            }}
-          >
-            Sair
-          </Button>
         </Access>
+
         <Paper className={classes.root}>
           <Table className={classes.table} aria-label="simple table">
             <TableHead>
               <TableRow>
-                <TableCell align="center" colSpan={5}>
-                  {message}
+                <TableCell align="center" colSpan={6}>
+                  {delet}
                 </TableCell>
               </TableRow>
               <TableRow>
@@ -91,6 +105,7 @@ export default function Home({ history }) {
                 <TableCell align="left">Preço</TableCell>
                 <TableCell align="left">Estoque</TableCell>
                 <TableCell align="left">Situação</TableCell>
+                <TableCell align="left">Ação</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -104,6 +119,16 @@ export default function Home({ history }) {
                   <TableCell align="left">{row.amount}</TableCell>
                   <TableCell align="left">
                     {row.active ? "Disponivel" : "Indisponivel"}
+                  </TableCell>
+                  <TableCell align="left">
+                    <TrashIcon
+                      onClick={() => handleDelete(row.product_id)}
+                      color="secondary"
+                    />
+                    <EditIcon
+                      onClick={() => handleDelete(row.product_id)}
+                      color="primary"
+                    />
                   </TableCell>
                 </TableRow>
               ))}

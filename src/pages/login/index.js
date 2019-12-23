@@ -2,27 +2,45 @@ import React, { useState } from "react";
 import "./styles.css";
 import api from "../../service/api";
 
-// import { Container } from './styles';
+import { makeStyles } from "@material-ui/core/styles";
+import LinearProgress from "@material-ui/core/LinearProgress";
 
+// import { Container } from './styles';
+const useStyles = makeStyles(theme => ({
+  root: {
+    width: "100%",
+    "& > * + *": {
+      marginTop: theme.spacing(2)
+    }
+  }
+}));
 export default function Login({ history }) {
   const [auth, setAuth] = useState(false);
-  const [login, setLogin] = useState("");
+  const [login, setLogin] = useState([]);
   const [password, setPassword] = useState("");
+  const [message, setMessage] = useState();
+  const [loading, setLoading] = useState(false);
+
   async function clickLogin(event) {
     event.preventDefault();
+
+    if (login === "") {
+      console.log("login vazio");
+      return false;
+    }
     const response = await api.post("/Authentication/SigIn", {
       login: login,
       password: password
     });
     const data = response.data;
-    console.log(data);
 
+    if (response.statu === 401) setMessage("Erro ao tentar logar.");
     setAuth(data.sucesso);
     if (data.sucesso) {
       history.push("/home");
       localStorage.setItem("token", data.objetoDeRetorno.token);
       localStorage.setItem("userName", data.objetoDeRetorno.nome);
-    }
+    } else setMessage("Erro ao tentar logar.");
   }
 
   return (
@@ -47,6 +65,7 @@ export default function Login({ history }) {
                 className="focus-input100"
                 data-placeholder="Usuário"
               ></span>
+              <LinearProgress color="secondary" />
             </div>
 
             <div
@@ -66,6 +85,9 @@ export default function Login({ history }) {
             </div>
 
             <div className="container-login100-form-btn">
+              <div className="text-center p-t-115">
+                <span className="txt1">{message != "" ? message : ""}</span>
+              </div>
               <div className="wrap-login100-form-btn">
                 <div className="login100-form-bgbtn"></div>
                 <button className="login100-form-btn" type="submit">

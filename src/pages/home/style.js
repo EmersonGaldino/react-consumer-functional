@@ -1,14 +1,14 @@
 import styled from "styled-components";
 
 export const Container = styled.div`
-  width: 80%;
+  width: 100%;
   list-style: none;
   /* display: grid; */
   /* grid-template-columns: 1fr 1fr; */
   /* grid-gap: 20px; */
   margin-bottom: 30px;
-  margin-left: 10em;
-  margin-top: 60px;
+  margin-left: 5 em;
+  margin-top: 50px;
 `;
 
 export const Access = styled.div`
@@ -23,4 +23,9 @@ export const Form = styled.div`
   width: 100%;
   display: flex;
   justify-content: space-between;
+`;
+
+export const handleTable = styled.div`
+  height: 200px;
+  max-height: 300px;
 `;

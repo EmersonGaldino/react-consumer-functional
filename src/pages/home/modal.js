@@ -76,7 +76,7 @@ export default function ModalCreate() {
         amount: amount
       }
     ];
-    console.log(model);
+
     let config = {
       headers: { Authorization: "Bearer " + localStorage.getItem("token") },
       "Content-Type": "text/json"
